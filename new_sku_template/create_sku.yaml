@@ -1,0 +1,23 @@
+# Anchorpoint Markup Language
+# Predefined Variables: e.g. ${path}
+# Environment Variables: e.g. ${MY_VARIABLE}
+# Full documentation: https://docs.anchorpoint.app/docs/actions/create-actions
+
+version: 1.0
+action:
+  name: Create SKU
+
+  version: 1
+  id: ap::shark-ninja::new-sku
+  category: user
+  type: python
+  author: Anchorpoint Software GmbH
+  description: Creates a new SKU template 
+
+  script: "create_sku.py"
+  icon:
+    path: ":/icons/user-interface/folder.svg"
+  
+  register:
+    sidebar:
+      enable: true
