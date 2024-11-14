@@ -2,6 +2,7 @@ import anchorpoint as ap
 import apsync as aps
 import os
 import re
+import shutil
 
 def create_sku_from_template():
     # Define the path to the template directory
@@ -33,17 +34,24 @@ def create_sku_from_template():
     # Create a dialog to get user input for each variable
     dialog = ap.Dialog()
     dialog.title = "Create SKU"
+    if ap.get_context().icon:
+        dialog.icon = ap.get_context().icon
     
     for var in variables.keys():
-        dialog.add_text(var, width=72).add_input("", var=var)
+        dialog.add_text(var, width=72).add_input("", var=var,placeholder="AB-234-BL")
+
+    def on_create_from_template(dialog):
+        dialog.close()
+        ap.get_context().run_async(copy_from_template,dialog)
     
-    def on_create(dialog):
+    def copy_from_template(dialog):
+        progress = ap.Progress("Creating from Template")
         # Update variables with user input
         for var in variables.keys():
             variables[var] = dialog.get_value(var)
         
         # Define the target folder
-        target_folder = ap.get_context().path
+        target_folder = ap.get_context().project_path
         
         # Resolve the template folder name with variables
         resolved_folder_name = aps.resolve_variables(template_folder_name, variables)
@@ -52,10 +60,19 @@ def create_sku_from_template():
         # Copy the template folder with variables replaced
         aps.copy_from_template(first_template_folder, target_path, variables)
         
-        dialog.close()
+        # Check and copy c4d_publish.py if necessary
+        ap_folder = os.path.join(target_folder, ".ap")
+        
+        c4d_publish_target = os.path.join(ap_folder, "c4d_publish.py")
+        if not os.path.exists(c4d_publish_target):
+            c4d_publish_source = os.path.join(os.path.dirname(__file__), "c4d_publish.py")
+            shutil.copy(c4d_publish_source, c4d_publish_target)
+        
+        progress.finish()
         ap.UI().show_success("SKU created successfully")
+        ap.UI().reload()
     
-    dialog.add_button("Create", callback=on_create)
+    dialog.add_button("Create", callback=on_create_from_template)
     dialog.show()
 
 # Call the function to execute the action

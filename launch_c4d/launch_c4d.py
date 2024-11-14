@@ -2,14 +2,16 @@ import anchorpoint as ap
 import apsync as aps
 import os
 
-def create_sku_dialog(options):
+def create_sku_dialog(sku_options):
     # Create a new dialog
     dialog = ap.Dialog()
     dialog.title = "Pick SKU Type"
 
+    # Get the context and list visible folders
+    ctx = ap.Context.instance()
+
     # Add a dropdown with the label "SKU Type"
-    sku_options = ["ABC-12345-S-BC", "ABC-12345-S-BL"]
-    dialog.add_text("SKU Type").add_dropdown("SKU Type", sku_options, var="sku_type", callback=dropdown_switched).add_button("Open",var="button", callback=button_clicked, enabled=False)
+    dialog.add_text("SKU Type").add_dropdown("SKU Type", sku_options, var="sku_type", callback=dropdown_switched).add_button("Open", var="button", callback=button_clicked, enabled=False)
 
     # Show the dialog
     dialog.show()
@@ -17,6 +19,7 @@ def create_sku_dialog(options):
 def button_clicked(dialog):
     sku = dialog.get_value("sku_type")
     launch_cinema_4d(sku)
+    dialog.close()
    
 def dropdown_switched(dialog,value):
     if value != "SKU Type":

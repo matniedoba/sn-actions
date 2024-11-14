@@ -42,8 +42,13 @@ def main():
 
     project = aps.get_project(path)
     first_subfolder = extract_first_subfolder(project.path, path)
-    task_list = database.tasks.get_task_list(project.path,first_subfolder)
-    task = database.tasks.create_task(task_list,msg)
+    task_list = database.tasks.get_task_list(project.path, first_subfolder)
+    
+    # Check if the task_list is empty and create a new one if necessary
+    if not task_list:
+        task_list = database.tasks.create_task_list(project.path, first_subfolder)
+
+    task = database.tasks.create_task(task_list, msg)
     database.tasks.set_task_icon(task, aps.Icon(icon_path=":/icons/Misc/single Version.svg",color=""))
 
     today_date = datetime.now()
@@ -51,8 +56,8 @@ def main():
     test_folder = os.path.join(project.path,first_subfolder,"4_Concept_Renders/1_Tests/",os.path.splitext(os.path.basename(path))[0])
     final_folder = os.path.join(project.path,first_subfolder,"4_Concept_Renders/3_Final/",os.path.splitext(os.path.basename(path))[0])
 
-    database.attributes.set_attribute_value(task,"Date", today_date)
     database.attributes.set_attribute_value(task,"Artist", ctx.email)
+    database.attributes.set_attribute_value(task,"Date", today_date)
 
     database.attributes.set_attribute_value(task,"File", os.path.relpath(path,project.path).replace("\\","/"))
     if os.path.exists(test_folder):
