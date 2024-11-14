@@ -16,11 +16,14 @@ action:
   type: package
   enable: true
   description: Launch Cinema 4D and manage SKU parts
+  icon:
+    path: sn_logo.png
 
   author: "Anchorpoint Software GmbH"
 
   actions:
-    -  ap::shark-ninja
+    -  ap::shark-ninja::launch-c4d
+    -  ap::shark-ninja::new-sku
 
 
     

@@ -80,7 +80,23 @@ def create_sku_from_template():
             ui_spec_attribute = database.attributes.create_attribute(
                 "UI Spec", aps.AttributeType.text
             )
-            
+
+        file_attribute = database.attributes.get_attribute("File")
+        if not file_attribute:
+            file_attribute = database.attributes.create_attribute(
+                "File", aps.AttributeType.hyperlink
+            )
+        file_attribute = database.attributes.get_attribute("Tests")
+        if not file_attribute:
+            file_attribute = database.attributes.create_attribute(
+                "Tests", aps.AttributeType.hyperlink
+            )
+        file_attribute = database.attributes.get_attribute("Finals")
+        if not file_attribute:
+            file_attribute = database.attributes.create_attribute(
+                "Finals", aps.AttributeType.hyperlink
+            )
+
         database.attributes.set_attribute_value(target_path,id_spec_attribute, id_spec_value)
         database.attributes.set_attribute_value(target_path,ui_spec_attribute, ui_spec_value)
       
