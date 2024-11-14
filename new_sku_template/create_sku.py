@@ -39,7 +39,11 @@ def create_sku_from_template():
     
     for var in variables.keys():
         dialog.add_text(var, width=72).add_input("", var=var,placeholder="AB-234-BL")
-
+    
+    # Add inputs for "ID Spec" and "UI Spec"
+    dialog.add_text("ID Spec", width=72).add_input("", var="id_spec", placeholder="Enter ID Spec")
+    dialog.add_text("UI Spec", width=72).add_input("", var="ui_spec", placeholder="Enter UI Spec")
+    
     def on_create_from_template(dialog):
         dialog.close()
         ap.get_context().run_async(copy_from_template,dialog)
@@ -50,6 +54,10 @@ def create_sku_from_template():
         for var in variables.keys():
             variables[var] = dialog.get_value(var)
         
+        # Get the values for "ID Spec" and "UI Spec"
+        id_spec_value = dialog.get_value("id_spec")
+        ui_spec_value = dialog.get_value("ui_spec")
+        
         # Define the target folder
         target_folder = ap.get_context().project_path
         
@@ -59,7 +67,23 @@ def create_sku_from_template():
         
         # Copy the template folder with variables replaced
         aps.copy_from_template(first_template_folder, target_path, variables)
-        
+
+        database = ap.get_api()
+
+        id_spec_attribute = database.attributes.get_attribute("ID Spec")
+        if not id_spec_attribute:
+            id_spec_attribute = database.attributes.create_attribute(
+                "ID Spec", aps.AttributeType.text
+            )
+        ui_spec_attribute = database.attributes.get_attribute("UI Spec")
+        if not ui_spec_attribute:
+            ui_spec_attribute = database.attributes.create_attribute(
+                "UI Spec", aps.AttributeType.text
+            )
+            
+        database.attributes.set_attribute_value(target_path,id_spec_attribute, id_spec_value)
+        database.attributes.set_attribute_value(target_path,ui_spec_attribute, ui_spec_value)
+      
         # Check and copy c4d_publish.py if necessary
         ap_folder = os.path.join(target_folder, ".ap")
         
