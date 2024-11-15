@@ -7,7 +7,7 @@ import re
 import platform
 import threading
 
-PLUGIN_ID = 1000001  # Replace with a unique ID
+PLUGIN_ID = 1064547  # Replace with a unique ID
 
 
 class OpenLatestVersionDialog(gui.GeDialog):
