@@ -4,6 +4,7 @@ import sys
 import json
 import os
 from datetime import datetime
+import re
 
 def extract_first_subfolder(project_path, full_path):
     # Normalize paths to ensure consistent separators
@@ -17,6 +18,26 @@ def extract_first_subfolder(project_path, full_path):
     first_subfolder = relative_path.split(os.sep)[0]
     
     return first_subfolder
+    
+def get_master_name(filepath,appendix):
+    # Extract the filename from the filepath
+    filename, extension = os.path.splitext(os.path.basename(filepath))
+    
+    match = re.search(r'(.*?)(?:_v?(\d+))(?:_|$)', filename, re.IGNORECASE)
+    if match:
+        return match.group(1)+appendix+extension
+    
+    # If no match with underscore, try matching 'v' followed by digits at the end
+    match = re.search(r'(.*?v)(\d+)$', filename, re.IGNORECASE)
+    if match:
+        return match.group(1)+appendix+extension
+    
+    # If still no match, try matching any digits at the end
+    match = re.search(r'(.*?)(\d+)$', filename)
+    if match:
+        return match.group(1)+appendix+extension
+    
+    return filename+appendix+extension
 
 def main():
     arguments = sys.argv[1] 
@@ -25,6 +46,7 @@ def main():
     msg = ""
     path = ""
     ctx = ap.get_context()
+    appendix = "_master"
 
     # Parse the JSON string
     try:
@@ -51,17 +73,19 @@ def main():
     task = database.tasks.create_task(task_list, msg)
     database.tasks.set_task_icon(task, aps.Icon(icon_path=":/icons/Misc/single Version.svg",color=""))
 
-    today_date = datetime.now()
-
-    test_folder = os.path.join(project.path,first_subfolder,"4_Concept_Renders/1_Tests/",os.path.splitext(os.path.basename(path))[0])
-    final_folder = os.path.join(project.path,first_subfolder,"4_Concept_Renders/3_Final/",os.path.splitext(os.path.basename(path))[0])
+    today_date = datetime.now()    
+    relative_file_path = os.path.relpath(path,project.path).replace("\\","/")
 
     database.attributes.set_attribute_value(task,"Artist", ctx.email)
     database.attributes.set_attribute_value(task,"Date", today_date)
-
-    database.attributes.set_attribute_value(task,"File", os.path.relpath(path,project.path).replace("\\","/"))
+    database.attributes.set_attribute_value(task,"Source File", relative_file_path)
     
-    print(f"The file has been published in SKU {first_subfolder}")
+    master_path = os.path.join(os.path.dirname(path),get_master_name(path, appendix))
+    aps.copy_file(path, master_path, True)
+    database.attributes.set_attribute_value(master_path,"Source File", os.path.basename(path)+"/")
+    
+    print(os.path.basename(path))
+    #print(f"The file has been published in SKU {first_subfolder}")
 
 if __name__ == "__main__":
     main()

@@ -74,10 +74,10 @@ def create_sku_from_template():
                 "Wrike", aps.AttributeType.hyperlink
             )
 
-        file_attribute = database.attributes.get_attribute("File")
+        file_attribute = database.attributes.get_attribute("Source File")
         if not file_attribute:
             file_attribute = database.attributes.create_attribute(
-                "File", aps.AttributeType.hyperlink
+                "Source File", aps.AttributeType.hyperlink
             )
 
         database.attributes.set_attribute_value(target_path,id_spec_attribute, wrike_url)
