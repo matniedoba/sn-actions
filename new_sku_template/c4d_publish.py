@@ -60,10 +60,6 @@ def main():
     database.attributes.set_attribute_value(task,"Date", today_date)
 
     database.attributes.set_attribute_value(task,"File", os.path.relpath(path,project.path).replace("\\","/"))
-    if os.path.exists(test_folder):
-        database.attributes.set_attribute_value(task,"Tests", os.path.relpath(test_folder,project.path).replace("\\","/"))
-    if os.path.exists(final_folder):
-        database.attributes.set_attribute_value(task,"Tests", os.path.relpath(test_folder,project.path).replace("\\","/"))
     
     print(f"The file has been published in SKU {first_subfolder}")
 

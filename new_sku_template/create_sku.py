@@ -41,8 +41,7 @@ def create_sku_from_template():
         dialog.add_text(var, width=72).add_input("", var=var,placeholder="AB-234-BL")
     
     # Add inputs for "ID Spec" and "UI Spec"
-    dialog.add_text("ID Spec", width=72).add_input("", var="id_spec", placeholder="Enter ID Spec")
-    dialog.add_text("UI Spec", width=72).add_input("", var="ui_spec", placeholder="Enter UI Spec")
+    dialog.add_text("Wrike Task", width=72).add_input("", var="wrike", placeholder="Enter Wrike URL")
     
     def on_create_from_template(dialog):
         dialog.close()
@@ -55,8 +54,7 @@ def create_sku_from_template():
             variables[var] = dialog.get_value(var)
         
         # Get the values for "ID Spec" and "UI Spec"
-        id_spec_value = dialog.get_value("id_spec")
-        ui_spec_value = dialog.get_value("ui_spec")
+        wrike_url = dialog.get_value("wrike")
         
         # Define the target folder
         target_folder = ap.get_context().project_path
@@ -70,15 +68,10 @@ def create_sku_from_template():
 
         database = ap.get_api()
 
-        id_spec_attribute = database.attributes.get_attribute("ID Spec")
+        id_spec_attribute = database.attributes.get_attribute("Wrike")
         if not id_spec_attribute:
             id_spec_attribute = database.attributes.create_attribute(
-                "ID Spec", aps.AttributeType.text
-            )
-        ui_spec_attribute = database.attributes.get_attribute("UI Spec")
-        if not ui_spec_attribute:
-            ui_spec_attribute = database.attributes.create_attribute(
-                "UI Spec", aps.AttributeType.text
+                "Wrike", aps.AttributeType.hyperlink
             )
 
         file_attribute = database.attributes.get_attribute("File")
@@ -86,19 +79,8 @@ def create_sku_from_template():
             file_attribute = database.attributes.create_attribute(
                 "File", aps.AttributeType.hyperlink
             )
-        file_attribute = database.attributes.get_attribute("Tests")
-        if not file_attribute:
-            file_attribute = database.attributes.create_attribute(
-                "Tests", aps.AttributeType.hyperlink
-            )
-        file_attribute = database.attributes.get_attribute("Finals")
-        if not file_attribute:
-            file_attribute = database.attributes.create_attribute(
-                "Finals", aps.AttributeType.hyperlink
-            )
 
-        database.attributes.set_attribute_value(target_path,id_spec_attribute, id_spec_value)
-        database.attributes.set_attribute_value(target_path,ui_spec_attribute, ui_spec_value)
+        database.attributes.set_attribute_value(target_path,id_spec_attribute, wrike_url)
       
         # Check and copy c4d_publish.py if necessary
         ap_folder = os.path.join(target_folder, ".ap")
