@@ -45,9 +45,16 @@ class OpenLatestVersionDialog(gui.GeDialog):
     def run_executable(self, user_message):
         def execute_command():
             try:
-                # Show busy indicator
-                gui.StatusSetText("Talking to Anchorpoint")
-                gui.StatusSetSpin()
+
+                c4d_version = c4d.GetC4DVersion() // 1000                
+
+                # Show busy indicator depending on c4d version
+                if c4d_version <= 2024:
+                    c4d.StatusSetText("Talking to Anchorpoint")
+                    c4d.StatusSetSpin()
+                else:
+                    gui.StatusSetText("Talking to Anchorpoint")
+                    gui.StatusSetSpin() 
 
                 # Path to the executable
                 executable_path = get_executable_path()
@@ -87,14 +94,15 @@ class OpenLatestVersionDialog(gui.GeDialog):
 
                 # Run the command and capture the output
                 result = subprocess.run(command, capture_output=True, text=True, check=True, startupinfo=startupinfo)
-                if result.stderr:  # Print the standard error if there is any
+                # Check for "script not found" message
+                if "script not found" in result.stderr.lower():
+                    gui.MessageDialog("This file is not part of an Anchorpoint project.")
+
+                elif result.stderr:  # Print the standard error if there is any
                     print(result.stderr)
                     gui.MessageDialog("An issue has occurred")
                     return
                 
-                # Check for "script not found" message
-                if "script not found" in result.stderr.lower():
-                    gui.MessageDialog("This file is not part of an Anchorpoint project.")
                 else:
                     # Show success message if no errors
                     gui.MessageDialog(result.stdout)
@@ -104,7 +112,10 @@ class OpenLatestVersionDialog(gui.GeDialog):
             
             finally:
                 # Hide busy indicator
-                gui.StatusClear()
+                if c4d_version <= 2024:
+                    c4d.StatusClear()
+                else:
+                    gui.StatusClear()
 
         # Run the command in a separate thread
         threading.Thread(target=execute_command).start()
