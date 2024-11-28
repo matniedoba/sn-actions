@@ -2,19 +2,34 @@ import anchorpoint as ap
 import apsync as aps
 import os
 import re
-import shutil
+import platform
+
+
+def get_workspace_template_dir():    
+    ctx = ap.get_context()    
+    settings = aps.SharedSettings(ctx.workspace_id, "SharkNinjaSettings")
+    template_dir_win = settings.get("template_dir_win")
+    template_dir_mac = settings.get("template_dir_mac")
+
+    if platform.system() == "Darwin":
+        return template_dir_mac
+    else :
+        return template_dir_win
 
 def create_sku_from_template():
-    # Define the path to the template directory
-    template_dir = os.path.join(os.path.dirname(__file__), "template")
     
+    template_dir = get_workspace_template_dir()
+
     # Get the list of subfolders in the template directory
-    subfolders = next(os.walk(template_dir))[1]
+    try:
+        if template_dir == "":
+            template_dir = os.path.join(os.path.dirname(__file__), "template")        
     
-    if not subfolders:
-        ap.UI().show_info("No templates available", "Please add a template in the 'template' folder.")
-        return
-    
+        subfolders = next(os.walk(template_dir))[1]
+    except Exception:
+        ap.UI().show_info("No templates available", "Please add a path in the action settings")
+        return  # Exit the function if an error occurs
+        
     # Assume the first subfolder is the template folder
     template_folder_name = subfolders[0]
     first_template_folder = os.path.join(template_dir, template_folder_name)
@@ -81,14 +96,6 @@ def create_sku_from_template():
             )
 
         database.attributes.set_attribute_value(target_path,id_spec_attribute, wrike_url)
-      
-        # Check and copy c4d_publish.py if necessary
-        ap_folder = os.path.join(target_folder, ".ap")
-        
-        c4d_publish_target = os.path.join(ap_folder, "c4d_publish.py")
-        if not os.path.exists(c4d_publish_target):
-            c4d_publish_source = os.path.join(os.path.dirname(__file__), "c4d_publish.py")
-            shutil.copy(c4d_publish_source, c4d_publish_target)
         
         progress.finish()
         ap.UI().show_success("SKU created successfully")

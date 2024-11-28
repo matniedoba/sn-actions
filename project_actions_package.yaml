@@ -19,6 +19,7 @@ action:
   icon:
     path: sn_logo.png
 
+  settings: "new_sku_template/template_settings.py"
   author: "Anchorpoint Software GmbH"
 
   actions:
