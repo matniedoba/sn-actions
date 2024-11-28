@@ -1,6 +1,8 @@
 import anchorpoint as ap
 import apsync as aps
 import os
+import re
+import shutil
 
 def create_sku_dialog(sku_options):
     # Create a new dialog
@@ -40,8 +42,14 @@ def dropdown_switched(dialog,value):
 def launch_cinema_4d(sku,new_increment):
     # Logic to launch Cinema 4D
     ctx = ap.Context.instance()
-    target_folder = os.path.join(ctx.project_path,sku,"3_Scenes/1_Cinema4D")
-    import re
+    target_folder = os.path.join(ctx.project_path,sku,"3_Scenes/1_Cinema4D")     
+      
+    # Check and copy c4d_publish.py to be at the latest state    
+    project_folder = ap.get_context().project_path
+    ap_folder = os.path.join(project_folder, ".ap")        
+    c4d_publish_target = os.path.join(ap_folder, "c4d_publish.py")
+    c4d_publish_source = os.path.join(os.path.dirname(__file__), "c4d_publish.py")
+    shutil.copy(c4d_publish_source, c4d_publish_target)
 
     # Regular expression to match the increment pattern
     increment_pattern = r'_(?:v)?(\d+).c4d$'
