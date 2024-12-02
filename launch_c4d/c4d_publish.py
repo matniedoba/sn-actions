@@ -42,7 +42,7 @@ def get_master_name(filepath,appendix):
 def main():
     arguments = sys.argv[1] 
     arguments = arguments.replace("\\", "\\\\")
-    database = aps.get_api()
+    database = ap.get_api()
     msg = ""
     path = ""
     ctx = ap.get_context()
