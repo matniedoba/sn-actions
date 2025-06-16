@@ -7,7 +7,7 @@ version: "1.0"
 
 action:
   #Must Have Properties
-  name: SN Project Actions
+  name: SKU Publish Workflow
 
   #Optional Properties
   version: 1
@@ -17,7 +17,7 @@ action:
   enable: true
   description: Launch Cinema 4D and manage SKU parts
   icon:
-    path: sn_logo.png
+    path: sku.svg
 
   settings: "new_sku_template/template_settings.py"
   author: "Anchorpoint Software GmbH"
