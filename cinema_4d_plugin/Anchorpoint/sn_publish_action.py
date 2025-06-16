@@ -6,6 +6,14 @@ import os
 from datetime import datetime
 import re
 
+### Summary
+# This script is called by the Anchorpoint plugin for Cinema 4D to publish a file.
+# It takes a look at the file path and the message provided by the the cinema 4D plugin,
+# extracts the SKU from the project path, creates a task list if it doesn't exist,
+# and creates a task with the provided message.
+# It also copies the file to a master version and sets various attributes for the task.
+
+# Just get the first subfolder of the project path, which is the SKU
 def extract_first_subfolder(project_path, full_path):
     # Normalize paths to ensure consistent separators
     project_path = os.path.normpath(project_path)
@@ -19,6 +27,7 @@ def extract_first_subfolder(project_path, full_path):
     
     return first_subfolder
     
+# This is similar to create referenced file. It removes this suffix from the filename.
 def get_master_name(filepath,appendix):
     # Extract the filename from the filepath
     filename, extension = os.path.splitext(os.path.basename(filepath))
@@ -39,6 +48,7 @@ def get_master_name(filepath,appendix):
     
     return filename+appendix+extension
 
+# This function is called form the C4D plugin
 def main():
     arguments = sys.argv[1] 
     arguments = arguments.replace("\\", "\\\\")
@@ -64,6 +74,7 @@ def main():
     
     
     project = aps.get_project(path)
+    # the first subfolder is the SKU, which is used to create the task list
     first_subfolder = extract_first_subfolder(project.path, path)
     task_list = database.tasks.get_task_list(project.path, first_subfolder)
     

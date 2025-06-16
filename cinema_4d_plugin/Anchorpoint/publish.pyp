@@ -9,6 +9,12 @@ import threading
 
 PLUGIN_ID = 1064547  # Replace with a unique ID
 
+### Summary
+# This plugin creates a menu entry called "Anchorpoint/ Publish" in the Cinema 4D main menu.
+# It opens a dialog where the user can enter a comment and publish the current version of the Cinema 4D file to Anchorpoint.
+# It retrieves the path of the currently open document, constructs a command to the Anchorpoint CLI with an external Python script (which is in the same folder), that connects to the Anchorpoint metadata database,
+# and passes the user input as a JSON string.
+
 
 class OpenLatestVersionDialog(gui.GeDialog):
     def CreateLayout(self):
@@ -75,7 +81,7 @@ class OpenLatestVersionDialog(gui.GeDialog):
                 json_string = json.dumps(json_object)
                     
                 # Correctly format the command and its arguments
-                script_path = os.path.join(os.path.dirname(__file__), "shark_ninja_publish_action.py")
+                script_path = os.path.join(os.path.dirname(__file__), "sn_publish_action.py")
                 command = [
                     executable_path,
                     '--cwd', document_path,
