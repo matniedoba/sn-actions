@@ -75,12 +75,13 @@ class OpenLatestVersionDialog(gui.GeDialog):
                 json_string = json.dumps(json_object)
                     
                 # Correctly format the command and its arguments
+                script_path = os.path.join(os.path.dirname(__file__), "shark_ninja_publish_action.py")
                 command = [
                     executable_path,
                     '--cwd', document_path,
                     'python',
                     '-s',
-                    '.ap/c4d_publish.py',
+                    script_path,
                     '--args',
                     json_string,
                 ]

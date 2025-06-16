@@ -61,7 +61,8 @@ def main():
             raise Exception("The output could not be read")
     except json.JSONDecodeError:
         raise Exception("Failed to decode JSON.")
-
+    
+    
     project = aps.get_project(path)
     first_subfolder = extract_first_subfolder(project.path, path)
     task_list = database.tasks.get_task_list(project.path, first_subfolder)
@@ -84,7 +85,7 @@ def main():
     aps.copy_file(path, master_path, True)
     database.attributes.set_attribute_value(master_path,"Source File", os.path.basename(path)+"/")
     
-    print(f"The file has been published in SKU {first_subfolder}")
+    sys.__stdout__.write(f"The file has been published in SKU {first_subfolder}")
 
 if __name__ == "__main__":
     main()
