@@ -82,8 +82,10 @@ def main():
     database.attributes.set_attribute_value(task,"Source File", relative_file_path)
     
     master_path = os.path.join(os.path.dirname(path),get_master_name(path, appendix))
+    source_file_path = os.path.basename(path)+"/-" #need to append a slash and some random characters to make it a valid path in Anchorpoint
+
     aps.copy_file(path, master_path, True)
-    database.attributes.set_attribute_value(master_path,"Source File", os.path.basename(path)+"/")
+    database.attributes.set_attribute_value(master_path,"Source File", source_file_path)
     
     sys.__stdout__.write(f"The file has been published in SKU {first_subfolder}")
 
