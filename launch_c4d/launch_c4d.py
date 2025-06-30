@@ -40,16 +40,17 @@ def dropdown_switched(dialog,value):
         dialog.set_enabled("button",True)
 
 def launch_cinema_4d(sku,new_increment):
+
+    # Define the Cinema 4D content folder path, that is based on the folder structure
+    cinema_4d_content_folder = "3_Scenes/1_Cinema4D"
+
     # Logic to launch Cinema 4D
     ctx = ap.Context.instance()
-    target_folder = os.path.join(ctx.project_path,sku,"3_Scenes/1_Cinema4D")     
-      
-    # Check and copy c4d_publish.py to be at the latest state    
-    project_folder = ap.get_context().project_path
-    ap_folder = os.path.join(project_folder, ".ap")        
-    c4d_publish_target = os.path.join(ap_folder, "c4d_publish.py")
-    c4d_publish_source = os.path.join(os.path.dirname(__file__), "c4d_publish.py")
-    shutil.copy(c4d_publish_source, c4d_publish_target)
+    target_folder = os.path.join(ctx.project_path, sku, cinema_4d_content_folder)
+
+    if not os.path.isdir(target_folder) or not os.listdir(target_folder):
+        ap.UI().show_error("No Cinema 4D folder found", f"Cannot find or folder is empty: {cinema_4d_content_folder}")
+        return
 
     # Regular expression to match the increment pattern
     increment_pattern = r'_(?:v)?(\d+).c4d$'
@@ -85,7 +86,7 @@ def launch_cinema_4d(sku,new_increment):
             os.startfile(existing_file)      
             ap.UI().show_success("Opening Cinema 4D",f"Opening {sku}_v{highest_existing_increment:03d}.c4d")  
     else:
-        ap.UI().show_error("No Cinema 4D file found","Check the folder 3_Scenes/1_Cinema 4D and see if there is any Cinema 4D file located")
+        ap.UI().show_error("No Cinema 4D file found",f"Check the folder {cinema_4d_content_folder} 4D and see if there is any Cinema 4D file located")
 
 
 def main():    
